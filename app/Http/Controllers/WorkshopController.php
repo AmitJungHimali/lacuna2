@@ -39,7 +39,6 @@ class WorkshopController extends Controller
     public function store(Request $request)
     {
         $id=Auth::id();
-        
         $validator = Validator::make($request->all(),[
         'banner'=>['required'],
         'title'=>['required'],
@@ -57,7 +56,7 @@ class WorkshopController extends Controller
         }
         $request['user_id']=$id;
         $workshop=Workshop::create($request->all());
-        
+
 
         return new WorkshopResource($workshop);
     }
@@ -91,7 +90,7 @@ class WorkshopController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {   
+    {
         $workshop=Workshop::findOrFail($id);
         if($workshop->user_id==Auth::id()){
             $validator = Validator::make($request->all(),[
@@ -118,13 +117,13 @@ class WorkshopController extends Controller
         return response()->json([
             'message'=>'you are not owner of this workshop'
         ],401);
-        
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
     }
 
     /**
@@ -134,7 +133,7 @@ class WorkshopController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {   
+    {
         $workshop=Workshop::findOrFail($id);
         if($workshop->user_id==$user->id){
             $work=Workshop::whereId($id)->delete();
@@ -149,7 +148,7 @@ class WorkshopController extends Controller
         return response()->json([
             'message'=>'You are not authenticated to delet this workshop'
         ],401);
-        
+
 
     }
 }
