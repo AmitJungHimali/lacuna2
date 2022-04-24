@@ -58,7 +58,7 @@ class AuthController extends Controller
             'user'=>$userLoginDetail,
             'token'=>$token
         ];
-
+        \Mail::to('himaliamit1@gmail.com')->send(new \App\Mail\WelcomeMail($userdetails));
         return response($response,201);
         }
 

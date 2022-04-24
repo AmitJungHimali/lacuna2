@@ -30,8 +30,9 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token'
-       
+        'remember_token',
+       'isActive',
+       'firstLogin'
     ];
 
     /**
@@ -45,5 +46,9 @@ class User extends Authenticatable
 
     public function details(){
         return $this->hasOne('App\Models\Userdetails');
+    }
+    public function OTP(){
+        return $this->hasOne('App\Models\emailverification');
+        
     }
 }

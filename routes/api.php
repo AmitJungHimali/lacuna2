@@ -30,6 +30,11 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::put('workshop/{id}','App\Http\Controllers\WorkshopController@update'); 
     Route::delete('workshop/{id}','App\Http\Controllers\WorkshopController@destroy');       
 
+    Route::get('/mail','App\Http\Controllers\SmtpController@sendmailOTP');//sendOTP to user through email
+    Route::post('/verifymailOTP','App\Http\Controllers\SmtpController@inputOTP');
+    Route::get('useremailverification','App\Http\Controllers\SmtpController@verified');//only for email verification,user must be signed in.
+    Route::post('otpverification','App\Http\Controllers\SmtpController@OTP');//send code to verify email
 });
 Route::post('register','App\Http\Controllers\AuthController@register');
 Route::post('login','App\Http\Controllers\AuthController@login');
+

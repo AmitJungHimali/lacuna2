@@ -16,8 +16,8 @@ class WorkshopController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        return 'this is get';
+    {   
+        return WorkshopResource::collection(Workshop::paginate(5));
     }
 
     /**
@@ -118,13 +118,7 @@ class WorkshopController extends Controller
         return response()->json([
             'message'=>'you are not owner of this workshop'
         ],401);
-        
-            
-            
-            
-            
-            
-            
+                   
     }
 
     /**
