@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Rating;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RatingController extends Controller
 {
@@ -27,15 +29,25 @@ class RatingController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            'rating'=>'required',
-            'membership_id'=>'required'
-        ]);
-        $rating = new Rating();
-        $rating->rating =$request->rating;
-        $rating->membership_id =$request->membership_id;
-        $rating->save();
-        return response()->json(['message','data save successfully']);
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                'rating'=>'required',
+                'membership_id'=>'required'
+            ]);
+            $rating = new Rating();
+            $rating->rating =$request->rating;
+            $rating->membership_id =$request->membership_id;
+            $rating->save();
+            DB::commit();
+            return response()->json(['message','data save successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -46,7 +58,8 @@ class RatingController extends Controller
      */
     public function show($id)
     {
-        //
+        $rating = Rating::find($id);
+        return response()->json($rating);
     }
 
     /**
@@ -59,11 +72,26 @@ class RatingController extends Controller
     public function update(Request $request, $id)
     {
 
-        $rating = Rating::find($id);
-        $rating->rating =$request->rating;
-        $rating->membership_id =$request->membership_id;
-        $rating->save();
-        return response()->json(['message','data update successfully']);
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                'rating'=>'required',
+                'membership_id'=>'required'
+            ]);
+            $rating = Rating::find($id);
+            $rating->rating =$request->rating;
+            $rating->membership_id =$request->membership_id;
+            $rating->save();
+            DB::commit();
+            return response()->json(['message','data update successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
+
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Membershipsubscription;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MembershipsubscriptionController extends Controller
 {
@@ -27,24 +29,34 @@ class MembershipsubscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            'membershipstatus'=>'required',
-            'paymentstatus'=>'required',
-            'startdate'=>'required',
-            'enddate'=>'required',
-            'user_id'=>'required',
-            'membership_id'=>'required'
-        ]);
-        $membershipsubs = new Membershipsubscription();
-        $membershipsubs->membershipstatus =$request->membershipstatus;
-        $membershipsubs->paymentstatus =$request->paymentstatus;
-        $membershipsubs->startdate =$request->startdate;
-        $membershipsubs->enddate =$request->enddate;
-        $membershipsubs->user_id =$request->user_id;
-        $membershipsubs->membership_id =$request->membership_id;
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                'membershipstatus'=>'required',
+                'paymentstatus'=>'required',
+                'startdate'=>'required',
+                'enddate'=>'required',
+                'user_id'=>'required',
+                'membership_id'=>'required'
+            ]);
+            $membershipsubs = new Membershipsubscription();
+            $membershipsubs->membershipstatus =$request->membershipstatus;
+            $membershipsubs->paymentstatus =$request->paymentstatus;
+            $membershipsubs->startdate =$request->startdate;
+            $membershipsubs->enddate =$request->enddate;
+            $membershipsubs->user_id =$request->user_id;
+            $membershipsubs->membership_id =$request->membership_id;
 
-        $membershipsubs->save();
-        return response()->json(['message','data save successfully']);
+            $membershipsubs->save();
+            DB::commit();
+            return response()->json(['message','data save successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -55,7 +67,8 @@ class MembershipsubscriptionController extends Controller
      */
     public function show($id)
     {
-        //
+        $membershipsubs = Membershipsubscription::find($id);
+        return response()->json($membershipsubs);
     }
 
     /**
@@ -67,7 +80,10 @@ class MembershipsubscriptionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $this->validate($request,[
+        DB::beginTransaction();
+        try
+        {
+            // $this->validate($request,[
         //     'membershipstatus'=>'required',
         //     'paymentstatus'=>'required',
         //     'startdate'=>'required',
@@ -75,7 +91,7 @@ class MembershipsubscriptionController extends Controller
         //     'user_id'=>'required',
         //     'membership_id'=>'required'
         // ]);
-        $membershipsubs = new Membershipsubscription();
+        $membershipsubs = Membershipsubscription::find($id);
         $membershipsubs->membershipstatus =$request->membershipstatus;
         $membershipsubs->paymentstatus =$request->paymentstatus;
         $membershipsubs->startdate =$request->startdate;
@@ -84,7 +100,14 @@ class MembershipsubscriptionController extends Controller
         $membershipsubs->membership_id =$request->membership_id;
 
         $membershipsubs->save();
-        return response()->json(['message','data save successfully']);
+        DB::commit();
+        return response()->json(['message','data update successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
