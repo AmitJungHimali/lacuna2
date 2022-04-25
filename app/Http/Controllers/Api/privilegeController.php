@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Privilege;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class privilegeController extends Controller
 {
@@ -26,14 +28,24 @@ class privilegeController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            "privilege"=>"required",
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                "privilege"=>"required",
 
-        ]);
-        $privilege= new Privilege();
-        $privilege ->privilege = $request->privilege;
-        $privilege->save();
-        return response()->json(['message','Data save Successful']);
+            ]);
+            $privilege= new Privilege();
+            $privilege ->privilege = $request->privilege;
+            $privilege->save();
+            DB::commit();
+            return response()->json(['message','Data save Successful']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -57,14 +69,24 @@ class privilegeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $this->validate($request,[
+        DB::beginTransaction();
+        try
+        {
+            // $this->validate($request,[
         //     "privilege"=>"required",
 
         // ]);
         $privilege= Privilege::find($id);
         $privilege ->privilege = $request->privilege;
         $privilege->save();
+        DB::commit();
         return response()->json(['message','Data update Successful']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**

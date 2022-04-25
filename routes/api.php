@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\EventcategoryController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\MembershipsubscriptionController;
+use App\Http\Controllers\Api\NotificationSubscriptionController;
 use App\Http\Controllers\Api\permissionController;
 use App\Http\Controllers\Api\privilegeController;
 use App\Http\Controllers\Api\RatingController;
@@ -55,6 +56,8 @@ Route::apiResource('membershipsubscription',MembershipsubscriptionController::cl
 Route::apiResource('rating',RatingController::class);
 Route::apiResource('event',EventController::class);
 Route::apiResource('eventcategory',EventcategoryController::class);
+Route::apiResource('notificationsubscription',NotificationSubscriptionController::class);
+
 
 
 });

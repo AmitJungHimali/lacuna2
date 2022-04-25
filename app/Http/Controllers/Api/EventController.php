@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -29,32 +31,42 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $this -> validate($request,[
-            'title'=>'required',
-            'description'=>'required'
+        DB::beginTransaction();
+        try
+        {
+            $this -> validate($request,[
+                'title'=>'required',
+                'description'=>'required'
 
-        ]);
-        $event = new Event();
-        $event->title = $request->title;
-        if ($request->hasFile('image')){
-            $file = $request->image;
-            $newName = time(). $file->getClientOriginalName();
-            $file->move('uploads/event/',$newName);
-            $event->image ='uploads/event/' .$newName;
+            ]);
+            $event = new Event();
+            $event->title = $request->title;
+            if ($request->hasFile('image')){
+                $file = $request->image;
+                $newName = time(). $file->getClientOriginalName();
+                $file->move('uploads/event/',$newName);
+                $event->image ='uploads/event/' .$newName;
+            }
+            $event->time = $request->time;
+            $event->startdate = $request->startdate;
+            $event->location = $request->location;
+            $event->eventcategory_id = $request->eventcategory_id;
+            $event->keyword = $request->keyword;
+            $event->enddate = $request->enddate;
+            $event->venue = $request->venue;
+            $event->organizer = $request->organizer;
+            $event->price = $request->price;
+            $event->food = $request->food;
+            $event->description = $request->description;
+            $event->save();
+            DB::commit();
+            return response()->json(['message','data saved successfully']);
         }
-        $event->time = $request->time;
-        $event->startdate = $request->startdate;
-        $event->location = $request->location;
-        $event->eventcategory_id = $request->eventcategory_id;
-        $event->keyword = $request->keyword;
-        $event->enddate = $request->enddate;
-        $event->venue = $request->venue;
-        $event->organizer = $request->organizer;
-        $event->price = $request->price;
-        $event->food = $request->food;
-        $event->description = $request->description;
-        $event->save();
-        return response()->json(['message','data saved successfully']);
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -65,7 +77,8 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        //
+        $event = Event::find($id);
+        return response()->json($event);
     }
 
     /**
@@ -77,7 +90,10 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $this -> validate($request,[
+        DB::beginTransaction();
+        try
+        {
+            // $this -> validate($request,[
         //     'title'=>'required',
         //     'description'=>'required'
 
@@ -102,7 +118,14 @@ class EventController extends Controller
         $event->food = $request->food;
         $event->description = $request->description;
         $event->save();
+        DB::commit();
         return response()->json(['message','data update successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**

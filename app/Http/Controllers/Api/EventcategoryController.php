@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Eventcategory;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventcategoryController extends Controller
 {
@@ -27,16 +29,26 @@ class EventcategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $this -> validate($request,[
-            'title'=>'required',
-            'status'=>'required',
+        DB::beginTransaction();
+        try
+        {
+            $this -> validate($request,[
+                'title'=>'required',
+                'status'=>'required',
 
-        ]);
-        $category = new Eventcategory();
-        $category->title = $request->title;
-        $category->status = $request->status;
-        $category->save();
-        return response()->json(['message','data saved successfully']);
+            ]);
+            $category = new Eventcategory();
+            $category->title = $request->title;
+            $category->status = $request->status;
+            $category->save();
+            DB::commit();
+            return response()->json(['message','data saved successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -47,7 +59,9 @@ class EventcategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $category = Eventcategory::find($id);
+        return response()->json($category);
+
     }
 
     /**
@@ -59,16 +73,24 @@ class EventcategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this -> validate($request,[
-            'title'=>'required',
-            'status'=>'required',
+        DB::beginTransaction();
+        try{
+            $this -> validate($request,[
+                'title'=>'required',
+                'status'=>'required',
 
-        ]);
-        $category = Eventcategory::find($id);
-        $category->title = $request->title;
-        $category->status = $request->status;
-        $category->save();
-        return response()->json(['message','data update successfully']);
+            ]);
+            $category = Eventcategory::find($id);
+            $category->title = $request->title;
+            $category->status = $request->status;
+            $category->save();
+            DB::commit();
+           return response()->json(['message','data update successflly']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
     }
 
     /**

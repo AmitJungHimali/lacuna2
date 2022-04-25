@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MembershipController extends Controller
 {
@@ -27,21 +29,31 @@ class MembershipController extends Controller
      */
     public function store(Request $request)
     {
-        $this ->validate($request,[
-            'title'=>'required',
-            'description'=>'required',
-            'membershipPlan'=>'required',
-            'price'=>'required',
-            'rank'=>'required'
-        ]);
-        $membership = new Membership();
-        $membership->title = $request->title;
-        $membership->description = $request->description;
-        $membership->membershipPlan = $request->membershipPlan;
-        $membership->price = $request->price;
-        $membership->rank = $request->rank;
-        $membership->save();
-        return response()->json(['message','data saved successfully']);
+        DB::beginTransaction();
+        try
+        {
+            $this ->validate($request,[
+                'title'=>'required',
+                'description'=>'required',
+                'membershipPlan'=>'required',
+                'price'=>'required',
+                'rank'=>'required'
+            ]);
+            $membership = new Membership();
+            $membership->title = $request->title;
+            $membership->description = $request->description;
+            $membership->membershipPlan = $request->membershipPlan;
+            $membership->price = $request->price;
+            $membership->rank = $request->rank;
+            $membership->save();
+            DB::commit();
+            return response()->json(['message','data saved successfully']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**

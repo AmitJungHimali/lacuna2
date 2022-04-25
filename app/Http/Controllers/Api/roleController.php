@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class roleController extends Controller
 {
@@ -28,14 +30,26 @@ class roleController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            "role"=>"required",
+        DB::begintransaction();
+        try{
+            $this->validate($request,[
+                "role"=>"required",
 
-        ]);
-        $role= new Role();
-        $role ->role = $request->role;
-        $role->save();
-        return response()->json(['message','Data save Successful']);
+            ]);
+            $role= new Role();
+            $role ->role = $request->role;
+            $role->save();
+            DB::commit();
+           return response()->json(['message','data save successflly']);
+        }
+
+        Catch(Exception $e)
+        {
+            DB::rollback();
+        }
+
+
+
     }
 
     /**
@@ -46,7 +60,8 @@ class roleController extends Controller
      */
     public function show($id)
     {
-        //
+       $role = Role::find($id);
+       return response()->json($role);
     }
 
     /**
@@ -58,14 +73,26 @@ class roleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $this->validate($request,[
-        //     "role"=>"required",
+        DB::begintransaction();
+        try{
+            $this->validate($request,[
+                "role"=>"required",
 
-        // ]);
-        $role= Role::find($id);
-        $role ->role = $request->role;
-        $role->save();
-        return response()->json(['message','Data update Successful']);
+            ]);
+            $role= Role::find($id);
+            $role ->role = $request->role;
+            $role->save();
+            DB::commit();
+           return response()->json(['message','data update successflly']);
+        }
+
+        Catch(Exception $e)
+        {
+            DB::rollback();
+        }
+
+
+
     }
 
     /**

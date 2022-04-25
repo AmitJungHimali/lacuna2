@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class permissionController extends Controller
 {
@@ -27,16 +29,26 @@ class permissionController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            "permission"=>"required",
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                "permission"=>"required",
 
-        ]);
-        $permission= new Permission();
-        $permission ->permission = $request->permission;
-        $permission ->screen = $request->screen;
-        $permission ->role_id = $request->role_id;
-        $permission->save();
-        return response()->json(['message','Data save Successful']);
+            ]);
+            $permission= new Permission();
+            $permission ->permission = $request->permission;
+            $permission ->screen = $request->screen;
+            $permission ->role_id = $request->role_id;
+            $permission->save();
+            DB::commit();
+            return response()->json(['message','Data save Successful']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
+
     }
 
     /**
@@ -47,7 +59,8 @@ class permissionController extends Controller
      */
     public function show($id)
     {
-        //
+        $permission = Permission::find($id);
+        return response()->json($permission);
     }
 
     /**
@@ -59,17 +72,27 @@ class permissionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        DB::beginTransaction();
+        try
+        {
+            $this->validate($request,[
+                "permission"=>"required",
 
-        $this->validate($request,[
-            "permission"=>"required",
+            ]);
+            $permission= Permission::find($id);
+            $permission ->permission = $request->permission;
+            $permission ->screen = $request->screen;
+            $permission ->role_id = $request->role_id;
+            $permission->save();
+            DB::commit();
+            return response()->json(['message','Data update Successful']);
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+        }
 
-        ]);
-        $permission= Permission::find($id);
-        $permission ->permission = $request->permission;
-        $permission ->screen = $request->screen;
-        $permission ->role_id = $request->role_id;
-        $permission->save();
-        return response()->json(['message','Data update Successful']);
+
     }
 
     /**

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Screen;
+use App\Models\NotificationSubscription;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class screenController extends Controller
+class NotificationSubscriptionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class screenController extends Controller
      */
     public function index()
     {
-        $data = Screen::all();
+        $data = NotificationSubscription::all();
         return response()->json($data);
     }
 
@@ -29,23 +29,21 @@ class screenController extends Controller
      */
     public function store(Request $request)
     {
-        DB::beginTransaction();
-        try
-        {
-            $this->validate($request,[
-                "screen"=>"required",
-
-            ]);
-            $screen= new Screen();
-            $screen ->screens = $request->screen;
-            $screen->save();
-            return response()->json(['message','Data save Successful']);
+        DB::begintransaction();
+        try{
+            $notification=new NotificationSubscription();
+            $notification->fullname=$request->fullname;
+            $notification->email=$request->email;
+            $notification->subscriptionDate=$request->subscriptionDate;
+            $notification->save();
+            DB::commit();
+           return response()->json(['message','data save successflly']);
         }
+
         catch(Exception $e)
         {
-            DB::rollBack();
+            DB::rollback();
         }
-
     }
 
     /**
@@ -56,8 +54,8 @@ class screenController extends Controller
      */
     public function show($id)
     {
-        $screen = Screen::find($id);
-        return response()->json($screen);
+        $notification = NotificationSubscription::find($id);
+        return response()->json($notification);
     }
 
     /**
@@ -69,24 +67,21 @@ class screenController extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::beginTransaction();
-        try
-        {
-             // $this->validate($request,[
-        //     "screen"=>"required",
-
-        // ]);
-        $screen= Screen::find($id);
-        $screen ->screens = $request->screen;
-        $screen->save();
-        DB::commit();
-        return response()->json(['message','Data Update Successful']);
-        }
-        catch(Exception $e)
-        {
-            DB::rollBack();
+        DB::begintransaction();
+        try{
+            $notification=NotificationSubscription::find($id);
+            $notification->fullname=$request->fullname;
+            $notification->email=$request->email;
+            $notification->subscriptionDate=$request->subscriptionDate;
+            $notification->save();
+            DB::commit();
+           return response()->json(['message','data update successflly']);
         }
 
+        Catch(Exception $e)
+        {
+            DB::rollback();
+        }
     }
 
     /**
@@ -97,8 +92,8 @@ class screenController extends Controller
      */
     public function destroy($id)
     {
-        $screen=Screen::findOrFail($id);
-        $screen->delete();
+        $notification= NotificationSubscription::findOrFail($id);
+        $notification->delete();
         return response()->json(['message','Data Deleted Successful']);
     }
 }
