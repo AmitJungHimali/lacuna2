@@ -15,7 +15,9 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         for($i=0;$i<5;$i++){
-            role::create();
+            role::create([
+                'role'=>$i
+            ]);
         }
         
     }

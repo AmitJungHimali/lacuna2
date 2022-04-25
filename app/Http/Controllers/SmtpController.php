@@ -62,9 +62,18 @@ class SmtpController extends Controller
 
     public function inputOTP(Request $request){
         //check if OTP is already verified
+        
         //compare email otp with current saved otp of user
         $emailveri=emailverification::where('user_id',Auth::id())->first();
         
+        // mechanism to check if otp is older than 5min
+
+
+        // if(strtotime($emailveri->created_at) < strtotime("5 minutes")){
+        //     return 'this is in between 5mins';
+        // }return response()->json([
+        //     'message'=>'this is after 5mins'
+        // ],200);
         if($emailveri->otpToken==$request->code){
             $emailveri->status='OTPverified';
             $emailveri->save();
