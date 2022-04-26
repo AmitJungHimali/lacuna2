@@ -41,11 +41,16 @@ class RatingController extends Controller
             $rating->membership_id =$request->membership_id;
             $rating->save();
             DB::commit();
-            return response()->json(['message','data save successfully']);
+            return response()->json(['message','data save successfully',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -80,15 +85,26 @@ class RatingController extends Controller
                 'membership_id'=>'required'
             ]);
             $rating = Rating::find($id);
+            if($rating)
+            {}
+            else
+            {
+                return response()->json(['message','Record not found']);
+            }
             $rating->rating =$request->rating;
             $rating->membership_id =$request->membership_id;
             $rating->save();
             DB::commit();
-            return response()->json(['message','data update successfully']);
+            return response()->json(['message','data update successfully',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
 
@@ -102,8 +118,16 @@ class RatingController extends Controller
      */
     public function destroy($id)
     {
-        $rating=Rating::findOrFail($id);
-        $rating->delete();
+        $rating=Rating::find($id);
+        if($rating)
+        {
+            $rating->delete();
         return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

@@ -42,11 +42,16 @@ class EventcategoryController extends Controller
             $category->status = $request->status;
             $category->save();
             DB::commit();
-            return response()->json(['message','data saved successfully']);
+            return response()->json(['message','data saved successfully',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -81,15 +86,28 @@ class EventcategoryController extends Controller
 
             ]);
             $category = Eventcategory::find($id);
-            $category->title = $request->title;
-            $category->status = $request->status;
-            $category->save();
-            DB::commit();
-           return response()->json(['message','data update successflly']);
+            if($category)
+            {
+                $category->title = $request->title;
+                $category->status = $request->status;
+                $category->save();
+                DB::commit();
+               return response()->json(['message','Data update successflly',200]);
+            }
+            else
+            {
+                return response()->json(['message','Record not Found']);
+            }
+
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
     }
 
@@ -102,7 +120,15 @@ class EventcategoryController extends Controller
     public function destroy($id)
     {
         $category = Eventcategory::find($id);
-        $category -> delete();
-        return response()->json(['message','data update successfully']);
+        if($category)
+        {
+            $category -> delete();
+            return response()->json(['message','data Deleted successfully']);
+        }
+        else
+        {
+            return response()->json(['message','Record not Found']);
+        }
+
     }
 }

@@ -33,17 +33,23 @@ class screenController extends Controller
         try
         {
             $this->validate($request,[
-                "screen"=>"required",
+                "screens"=>"required",
 
             ]);
             $screen= new Screen();
-            $screen ->screens = $request->screen;
+            $screen ->screens = $request->screens;
             $screen->save();
-            return response()->json(['message','Data save Successful']);
+            DB::commit();
+            return response()->json(['message','Data save Successful',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -77,14 +83,27 @@ class screenController extends Controller
 
         // ]);
         $screen= Screen::find($id);
-        $screen ->screens = $request->screen;
-        $screen->save();
-        DB::commit();
-        return response()->json(['message','Data Update Successful']);
+        if($screen)
+        {
+            $screen ->screens = $request->screens;
+            $screen->save();
+            DB::commit();
+            return response()->json(['message','Data Update Successful',200]);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -97,8 +116,16 @@ class screenController extends Controller
      */
     public function destroy($id)
     {
-        $screen=Screen::findOrFail($id);
-        $screen->delete();
+        $screen=Screen::find($id);
+        if($screen)
+        {
+            $screen->delete();
         return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

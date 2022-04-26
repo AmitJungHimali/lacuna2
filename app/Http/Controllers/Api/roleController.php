@@ -40,12 +40,17 @@ class roleController extends Controller
             $role ->role = $request->role;
             $role->save();
             DB::commit();
-           return response()->json(['message','data save successflly']);
+           return response()->json(['message','data save successflly',200]);
         }
 
         Catch(Exception $e)
         {
             DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
 
@@ -80,15 +85,28 @@ class roleController extends Controller
 
             ]);
             $role= Role::find($id);
-            $role ->role = $request->role;
-            $role->save();
-            DB::commit();
-           return response()->json(['message','data update successflly']);
+            if($role)
+            {
+                $role ->role = $request->role;
+                $role->save();
+                DB::commit();
+               return response()->json(['message','data update successflly',200]);
+            }
+            else
+            {
+                return response()->json(['message','Record not found']);
+            }
+
         }
 
         Catch(Exception $e)
         {
             DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
 
@@ -103,8 +121,16 @@ class roleController extends Controller
      */
     public function destroy($id)
     {
-        $role=Role::findOrFail($id);
-        $role->delete();
+        $role=Role::find($id);
+        if($role)
+        {
+            $role->delete();
         return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

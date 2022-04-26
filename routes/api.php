@@ -43,9 +43,10 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::delete('workshop/{id}','App\Http\Controllers\WorkshopController@destroy');
 
     // raksha
-Route::post('permission',[permissionController::class,'store']);
-Route::post('permission/{id}',[permissionController::class,'update']);
-Route::delete('permission/delete/{id}',[permissionController::class,'destroy']);
+   Route::get('permission',[permissionController::class,'index']);
+   Route::post('permission',[permissionController::class,'store']);
+   Route::post('permission/{id}',[permissionController::class,'update']);
+   Route::delete('permission/delete/{id}',[permissionController::class,'destroy']);
 // Route::apiResource('permission',[permissionController::class,]);
 
 Route::apiResource('privilege',privilegeController::class);

@@ -47,11 +47,16 @@ class MembershipController extends Controller
             $membership->rank = $request->rank;
             $membership->save();
             DB::commit();
-            return response()->json(['message','data saved successfully']);
+            return response()->json(['message','data saved successfully',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -77,14 +82,35 @@ class MembershipController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $membership = Membership::where('id','=',$id)->first();
-        $membership->title = $request->title;
-        $membership->description = $request->description;
-        $membership->membershipPlan = $request->membershipPlan;
-        $membership->price = $request->price;
-        $membership->rank = $request->rank;
-        $membership->save();
-        return response()->json(['message','data update successfully']);
+        DB::beginTransaction();
+        try
+        {
+            $membership = Membership::where('id','=',$id)->first();
+        if($membership)
+        {
+            $membership->title = $request->title;
+            $membership->description = $request->description;
+            $membership->membershipPlan = $request->membershipPlan;
+            $membership->price = $request->price;
+            $membership->rank = $request->rank;
+            $membership->save();
+            return response()->json(['message','data update successfully',200]);
+        }
+        else
+        {
+            return response()->json(['message','Record not Found']);
+        }
+        }
+        catch(Exception $e)
+        {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
+        }
+
     }
 
     /**
@@ -96,7 +122,15 @@ class MembershipController extends Controller
     public function destroy($id)
     {
         $membership = Membership::find($id);
-        $membership->delete();
-        return response()->json(['message','data deleted successfully']);
+        if($membership)
+        {
+            $membership->delete();
+        return response()->json(['message','Data deleted successfully']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

@@ -17,8 +17,11 @@ class permissionController extends Controller
      */
     public function index()
     {
-        $data = Permission::all();
-        return response()->json($data);
+
+        $permission=Permission::all();
+        return response()->json($permission,200);
+
+
     }
 
     /**
@@ -42,11 +45,16 @@ class permissionController extends Controller
             $permission ->role_id = $request->role_id;
             $permission->save();
             DB::commit();
-            return response()->json(['message','Data save Successful']);
+            return response()->json(['message','Data save Successful',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -80,16 +88,29 @@ class permissionController extends Controller
 
             ]);
             $permission= Permission::find($id);
-            $permission ->permission = $request->permission;
-            $permission ->screen = $request->screen;
-            $permission ->role_id = $request->role_id;
-            $permission->save();
-            DB::commit();
-            return response()->json(['message','Data update Successful']);
+            if($permission)
+            {
+                $permission ->permission = $request->permission;
+                $permission ->screen = $request->screen;
+                $permission ->role_id = $request->role_id;
+                $permission->save();
+                DB::commit();
+                return response()->json(['message','Data update Successful',200]);
+            }
+            else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
 
@@ -103,9 +124,17 @@ class permissionController extends Controller
      */
     public function destroy($id)
     {
-        $permission=Permission::findOrFail($id);
-        $permission->delete();
-        return response()->json(['message','Data Deleted Successful']);
+        $permission=Permission::find($id);
+        if($permission)
+        {
+            $permission->delete();
+            return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
 
     }
 }

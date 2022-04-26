@@ -31,6 +31,8 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+
+
         DB::beginTransaction();
         try
         {
@@ -60,11 +62,18 @@ class EventController extends Controller
             $event->description = $request->description;
             $event->save();
             DB::commit();
-            return response()->json(['message','data saved successfully']);
+            return response()->json(['message','data saved successfully',200]);
         }
         catch(Exception $e)
         {
+
+            // return response()->json($event->errors() , 422);
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -99,7 +108,9 @@ class EventController extends Controller
 
         // ]);
         $event = Event::find($id);
-        $event->title = $request->title;
+        if($event)
+        {
+            $event->title = $request->title;
         if ($request->hasFile('image')){
             $file = $request->image;
             $newName = time(). $file->getClientOriginalName();
@@ -119,11 +130,21 @@ class EventController extends Controller
         $event->description = $request->description;
         $event->save();
         DB::commit();
-        return response()->json(['message','data update successfully']);
+        return response()->json(['message','data update successfully',200]);
+        }
+        else
+        {
+            return response()->json(['message','Record not Found']);
+        }
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -137,7 +158,15 @@ class EventController extends Controller
     public function destroy($id)
     {
         $event = Event::find($id);
-        $event -> delete();
-        return response()->json(['message','data update successfully']);
+        if($event)
+        {
+            $event -> delete();
+        return response()->json(['message','Data deleted successfully']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

@@ -39,11 +39,16 @@ class privilegeController extends Controller
             $privilege ->privilege = $request->privilege;
             $privilege->save();
             DB::commit();
-            return response()->json(['message','Data save Successful']);
+            return response()->json(['message','Data save Successful',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -77,14 +82,27 @@ class privilegeController extends Controller
 
         // ]);
         $privilege= Privilege::find($id);
+        if($privilege)
+        {
         $privilege ->privilege = $request->privilege;
         $privilege->save();
         DB::commit();
-        return response()->json(['message','Data update Successful']);
+        return response()->json(['message','Data update Successful',200]);
+
+        }
+        else{
+            return response()->json(["message",'Record Not found']);
+        }
+
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -97,9 +115,17 @@ class privilegeController extends Controller
      */
     public function destroy($id)
     {
-        $privilege=Privilege::findOrFail($id);
-        $privilege->delete();
+        $privilege=Privilege::find($id);
+        if($privilege)
+        {
+            $privilege->delete();
         return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
 
     }
 }

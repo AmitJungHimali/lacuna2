@@ -50,11 +50,16 @@ class MembershipsubscriptionController extends Controller
 
             $membershipsubs->save();
             DB::commit();
-            return response()->json(['message','data save successfully']);
+            return response()->json(['message','data save successfully',200]);
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -92,20 +97,33 @@ class MembershipsubscriptionController extends Controller
         //     'membership_id'=>'required'
         // ]);
         $membershipsubs = Membershipsubscription::find($id);
-        $membershipsubs->membershipstatus =$request->membershipstatus;
-        $membershipsubs->paymentstatus =$request->paymentstatus;
-        $membershipsubs->startdate =$request->startdate;
-        $membershipsubs->enddate =$request->enddate;
-        $membershipsubs->user_id =$request->user_id;
-        $membershipsubs->membership_id =$request->membership_id;
+        if($membershipsubs)
+        {
+            $membershipsubs->membershipstatus =$request->membershipstatus;
+            $membershipsubs->paymentstatus =$request->paymentstatus;
+            $membershipsubs->startdate =$request->startdate;
+            $membershipsubs->enddate =$request->enddate;
+            $membershipsubs->user_id =$request->user_id;
+            $membershipsubs->membership_id =$request->membership_id;
 
-        $membershipsubs->save();
-        DB::commit();
-        return response()->json(['message','data update successfully']);
+            $membershipsubs->save();
+            DB::commit();
+            return response()->json(['message','data update successfully',200]);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
         }
         catch(Exception $e)
         {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
 
     }
@@ -119,7 +137,15 @@ class MembershipsubscriptionController extends Controller
     public function destroy($id)
     {
         $membershipsubs = Membershipsubscription::find($id);
-        $membershipsubs->delete();
-        return response()->json(['message','data deleted successfully']);
+        if($membershipsubs)
+        {
+            $membershipsubs->delete();
+            return response()->json(['message','data deleted successfully']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }

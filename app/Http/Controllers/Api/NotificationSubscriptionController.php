@@ -37,12 +37,17 @@ class NotificationSubscriptionController extends Controller
             $notification->subscriptionDate=$request->subscriptionDate;
             $notification->save();
             DB::commit();
-           return response()->json(['message','data save successflly']);
+           return response()->json(['message','data save successflly',200]);
         }
 
         catch(Exception $e)
         {
             DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
     }
 
@@ -70,17 +75,30 @@ class NotificationSubscriptionController extends Controller
         DB::begintransaction();
         try{
             $notification=NotificationSubscription::find($id);
-            $notification->fullname=$request->fullname;
-            $notification->email=$request->email;
-            $notification->subscriptionDate=$request->subscriptionDate;
-            $notification->save();
-            DB::commit();
-           return response()->json(['message','data update successflly']);
+            if($notification)
+            {
+                $notification->fullname=$request->fullname;
+                $notification->email=$request->email;
+                $notification->subscriptionDate=$request->subscriptionDate;
+                $notification->save();
+                DB::commit();
+               return response()->json(['message','data update successflly',200]);
+            }
+            else
+            {
+                return response()->json(['message','Record not found']);
+            }
+
         }
 
         Catch(Exception $e)
         {
             DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'status' => 422
+            ]);
         }
     }
 
@@ -92,8 +110,16 @@ class NotificationSubscriptionController extends Controller
      */
     public function destroy($id)
     {
-        $notification= NotificationSubscription::findOrFail($id);
-        $notification->delete();
+        $notification= NotificationSubscription::find($id);
+        if($notification)
+        {
+            $notification->delete();
         return response()->json(['message','Data Deleted Successful']);
+        }
+        else
+        {
+            return response()->json(['message','Record not found']);
+        }
+
     }
 }
