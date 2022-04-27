@@ -17,6 +17,8 @@ use App\Models\Privilege;
 
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\WorkshopController;
+use App\Http\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,11 +41,11 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     });
     Route::post('logout','App\Http\Controllers\AuthController@logout');
 
-    Route::get('workshop','App\Http\Controllers\WorkshopController@index');
-    Route::post('workshop','App\Http\Controllers\WorkshopController@store');
-    Route::get('workshop/{id}','App\Http\Controllers\WorkshopController@show');
-    Route::put('workshop/{id}','App\Http\Controllers\WorkshopController@update');
-    Route::delete('workshop/{id}','App\Http\Controllers\WorkshopController@destroy');
+    Route::get('workshop',[WorkshopController::class,'index']);
+    Route::post('workshop',[WorkshopController::class,'store']);
+    Route::get('workshop/{id}',[WorkshopController::class,'show']);
+    Route::put('workshop/{id}',[WorkshopController::class,'update']);
+    Route::delete('workshop/{id}',[WorkshopController::class,'destroy']);
 
 
     Route::get('mentor',[MentorController::class,'index']);
@@ -57,6 +59,12 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::get('gallery/{id}',[GalleryController::class,'show']);
     Route::put('gallery/{id}',[GalleryController::class,'update']);
     Route::delete('gallery/{id}',[GalleryController::class,'destroy']);
+
+    Route::get('team',[TeamController::class,'index']);
+    Route::post('team',[TeamController::class,'store']);
+    Route::get('team/{id}',[TeamController::class,'show']);
+    Route::put('team/{id}',[TeamController::class,'update']);
+    Route::delete('team/{id}',[TeamController::class,'destroy']);
 
         // raksha
     Route::post('permission',[permissionController::class,'store']);
@@ -79,6 +87,6 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::get('useremailverification','App\Http\Controllers\SmtpController@verified');//only for email verification,user must be signed in.
     Route::post('otpverification','App\Http\Controllers\SmtpController@OTP');//send code to verify email
 });
-Route::post('register','App\Http\Controllers\AuthController@register');
-Route::post('login','App\Http\Controllers\AuthController@login');
+    Route::post('register','App\Http\Controllers\AuthController@register');
+    Route::post('login','App\Http\Controllers\AuthController@login');
 

@@ -18,7 +18,7 @@ class CreateUserdetailsTable extends Migration
             $table->string('firstName');
             $table->string('middleName');
             $table->string('lastName');
-            $table->binary('profileImage')->nullable();
+            $table->string('profileImage')->nullable();
             $table->integer('contact')->unique();
             $table->string('gender');;
             $table->date('birthDate');

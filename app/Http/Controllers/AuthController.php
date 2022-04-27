@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function register(Request $request){
+       
         $validator = Validator::make($request->all(),[
             'firstName'=>['required'],
             'middleName'=>['required'],
@@ -41,7 +42,7 @@ class AuthController extends Controller
         $token=$userLoginDetail->createToken('myapptoken')->plainTextToken;
         $userLoginDetail->remember_token=$token;
         $userLoginDetail->save();
-
+        
         $userdetails['firstName']=$request->firstName;
         $userdetails['middleName']=$request->middleName;
         $userdetails['lastName']=$request->lastName;
@@ -51,14 +52,21 @@ class AuthController extends Controller
         $userdetails['birthDate']=$request->birthDate;
         $userdetails['user_id']=$userLoginDetail->id;
         $userdetails['role_id']=$request->role_id;
-
+        
         $usercreation=UserDetail::create($userdetails);
-
+        if ($request->hasFile('profileImage')){
+            $file = $request->profileImage;
+            $newName = time(). $file->getClientOriginalName();
+            $file->move('uploads/userprofile/',$newName);
+            $usercreation->profileImage ='uploads/userprofile/' .$newName;
+            $usercreation->save();
+        }
+        
         $response=[
             'user'=>$userLoginDetail,
             'token'=>$token
         ];
-        \Mail::to('himaliamit1@gmail.com')->send(new \App\Mail\WelcomeMail($userdetails));
+        \Mail::to($request->email)->send(new \App\Mail\WelcomeMail($userdetails));
         return response($response,201);
         }
 
