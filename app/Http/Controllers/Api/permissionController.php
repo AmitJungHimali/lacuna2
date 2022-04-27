@@ -87,6 +87,7 @@ class permissionController extends Controller
         DB::beginTransaction();
         try
         {
+            $permission= Permission::findOrFail($id);
             $validator = Validator::make($request->all(),[
                 "permission"=>"required",
             ]);

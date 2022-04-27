@@ -43,6 +43,9 @@ class roleController extends Controller
             $role= new Role();
             $role ->role = $request->role;
             $role->save();
+            // dd($request->permission);
+            // $role->permissions()->sync([$request->permission]);
+            $role->permissions()->sync(3);
             DB::commit();
            return response()->json(['message','data save successflly',200]);
         }
