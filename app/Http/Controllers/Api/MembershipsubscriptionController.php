@@ -7,6 +7,7 @@ use App\Models\Membershipsubscription;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class MembershipsubscriptionController extends Controller
 {
@@ -32,7 +33,7 @@ class MembershipsubscriptionController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 'membershipstatus'=>'required',
                 'paymentstatus'=>'required',
                 'startdate'=>'required',
@@ -40,6 +41,10 @@ class MembershipsubscriptionController extends Controller
                 'user_id'=>'required',
                 'membership_id'=>'required'
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors());
+            }
             $membershipsubs = new Membershipsubscription();
             $membershipsubs->membershipstatus =$request->membershipstatus;
             $membershipsubs->paymentstatus =$request->paymentstatus;
@@ -88,14 +93,18 @@ class MembershipsubscriptionController extends Controller
         DB::beginTransaction();
         try
         {
-            // $this->validate($request,[
-        //     'membershipstatus'=>'required',
-        //     'paymentstatus'=>'required',
-        //     'startdate'=>'required',
-        //     'enddate'=>'required',
-        //     'user_id'=>'required',
-        //     'membership_id'=>'required'
-        // ]);
+            $validator = Validator::make($request->all(),[
+                'membershipstatus'=>'required',
+                'paymentstatus'=>'required',
+                'startdate'=>'required',
+                'enddate'=>'required',
+                'user_id'=>'required',
+                'membership_id'=>'required'
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors());
+            }
         $membershipsubs = Membershipsubscription::find($id);
         if($membershipsubs)
         {

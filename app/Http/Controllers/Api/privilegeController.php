@@ -6,6 +6,7 @@ use App\Models\Privilege;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class privilegeController extends Controller
 {
@@ -31,10 +32,13 @@ class privilegeController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 "privilege"=>"required",
-
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $privilege= new Privilege();
             $privilege ->privilege = $request->privilege;
             $privilege->save();
@@ -77,22 +81,26 @@ class privilegeController extends Controller
         DB::beginTransaction();
         try
         {
-            // $this->validate($request,[
-        //     "privilege"=>"required",
+            $validator = Validator::make($request->all(),[
+                "privilege"=>"required",
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
 
-        // ]);
-        $privilege= Privilege::find($id);
-        if($privilege)
-        {
-        $privilege ->privilege = $request->privilege;
-        $privilege->save();
-        DB::commit();
-        return response()->json(['message','Data update Successful',200]);
+            $privilege= Privilege::find($id);
+            if($privilege)
+            {
+            $privilege ->privilege = $request->privilege;
+            $privilege->save();
+            DB::commit();
+            return response()->json(['message','Data update Successful',200]);
 
-        }
-        else{
-            return response()->json(["message",'Record Not found']);
-        }
+            }
+            else{
+                return response()->json(["message",'Record Not found']);
+            }
 
         }
         catch(Exception $e)

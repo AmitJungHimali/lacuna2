@@ -7,6 +7,7 @@ use App\Models\Screen;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class screenController extends Controller
 {
@@ -32,10 +33,14 @@ class screenController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 "screens"=>"required",
 
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $screen= new Screen();
             $screen ->screens = $request->screens;
             $screen->save();
@@ -78,10 +83,14 @@ class screenController extends Controller
         DB::beginTransaction();
         try
         {
-             // $this->validate($request,[
-        //     "screen"=>"required",
+            $validator = Validator::make($request->all(),[
+                "screens"=>"required",
 
-        // ]);
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
         $screen= Screen::find($id);
         if($screen)
         {

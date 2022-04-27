@@ -8,6 +8,7 @@ use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class roleController extends Controller
 {
@@ -32,10 +33,13 @@ class roleController extends Controller
     {
         DB::begintransaction();
         try{
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 "role"=>"required",
-
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $role= new Role();
             $role ->role = $request->role;
             $role->save();
@@ -80,10 +84,14 @@ class roleController extends Controller
     {
         DB::begintransaction();
         try{
-            $this->validate($request,[
-                "role"=>"required",
 
+            $validator = Validator::make($request->all(),[
+                "role"=>"required",
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $role= Role::find($id);
             if($role)
             {

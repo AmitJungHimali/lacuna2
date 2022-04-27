@@ -7,6 +7,7 @@ use App\Models\NotificationSubscription;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class NotificationSubscriptionController extends Controller
 {
@@ -31,6 +32,15 @@ class NotificationSubscriptionController extends Controller
     {
         DB::begintransaction();
         try{
+            $validator = Validator::make($request->all(),[
+                'fullname'=>'required',
+                'email'=>'required',
+                'subscriptionDate'=>'required',
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $notification=new NotificationSubscription();
             $notification->fullname=$request->fullname;
             $notification->email=$request->email;
@@ -74,6 +84,15 @@ class NotificationSubscriptionController extends Controller
     {
         DB::begintransaction();
         try{
+            $validator = Validator::make($request->all(),[
+                'fullname'=>'required',
+                'email'=>'required',
+                'subscriptionDate'=>'required',
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $notification=NotificationSubscription::find($id);
             if($notification)
             {

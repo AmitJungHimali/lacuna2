@@ -8,6 +8,9 @@ use App\Models\Event;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
+use function GuzzleHttp\Promise\all;
 
 class EventController extends Controller
 {
@@ -36,11 +39,15 @@ class EventController extends Controller
         DB::beginTransaction();
         try
         {
-            $this -> validate($request,[
+            $validator = Validator::make($request->all(),[
                 'title'=>'required',
                 'description'=>'required'
-
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
             $event = new Event();
             $event->title = $request->title;
             if ($request->hasFile('image')){
@@ -102,11 +109,14 @@ class EventController extends Controller
         DB::beginTransaction();
         try
         {
-            // $this -> validate($request,[
-        //     'title'=>'required',
-        //     'description'=>'required'
-
-        // ]);
+            $validator = Validator::make($request->all(),[
+                'title'=>'required',
+                'description'=>'required'
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
         $event = Event::find($id);
         if($event)
         {

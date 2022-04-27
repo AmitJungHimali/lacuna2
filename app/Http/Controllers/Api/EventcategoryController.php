@@ -7,6 +7,7 @@ use App\Models\Eventcategory;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EventcategoryController extends Controller
 {
@@ -32,11 +33,15 @@ class EventcategoryController extends Controller
         DB::beginTransaction();
         try
         {
-            $this -> validate($request,[
+            $validate =  Validator::make($request->all(),[
                 'title'=>'required',
-                'status'=>'required',
-
+                'status'=>'required'
             ]);
+           if($validate->fails())
+           {
+               return response()->json($validate->errors() , 422);
+           }
+
             $category = new Eventcategory();
             $category->title = $request->title;
             $category->status = $request->status;
@@ -80,11 +85,14 @@ class EventcategoryController extends Controller
     {
         DB::beginTransaction();
         try{
-            $this -> validate($request,[
+            $validate =  Validator::make($request->all(),[
                 'title'=>'required',
-                'status'=>'required',
-
+                'status'=>'required'
             ]);
+           if($validate->fails())
+           {
+               return response()->json($validate->errors() , 422);
+           }
             $category = Eventcategory::find($id);
             if($category)
             {

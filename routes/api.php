@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AboutusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EventcategoryController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\MembershipsubscriptionController;
 use App\Http\Controllers\Api\NotificationSubscriptionController;
 use App\Http\Controllers\Api\permissionController;
 use App\Http\Controllers\Api\privilegeController;
+use App\Http\Controllers\Api\ProgramController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\roleController;
 use App\Http\Controllers\Api\screenController;
@@ -58,6 +60,10 @@ Route::apiResource('rating',RatingController::class);
 Route::apiResource('event',EventController::class);
 Route::apiResource('eventcategory',EventcategoryController::class);
 Route::apiResource('notificationsubscription',NotificationSubscriptionController::class);
+Route::apiResource('program',ProgramController::class);
+Route::apiResource('aboutus',AboutusController::class);
+
+
 
 
 

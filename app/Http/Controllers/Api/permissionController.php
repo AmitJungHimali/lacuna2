@@ -7,6 +7,7 @@ use App\Models\Permission;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class permissionController extends Controller
 {
@@ -35,10 +36,13 @@ class permissionController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 "permission"=>"required",
-
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $permission= new Permission();
             $permission ->permission = $request->permission;
             $permission ->screen = $request->screen;
@@ -83,10 +87,13 @@ class permissionController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 "permission"=>"required",
-
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $permission= Permission::find($id);
             if($permission)
             {

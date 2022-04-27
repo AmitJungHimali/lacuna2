@@ -7,6 +7,7 @@ use App\Models\Rating;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RatingController extends Controller
 {
@@ -32,10 +33,14 @@ class RatingController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 'rating'=>'required',
                 'membership_id'=>'required'
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $rating = new Rating();
             $rating->rating =$request->rating;
             $rating->membership_id =$request->membership_id;
@@ -80,10 +85,14 @@ class RatingController extends Controller
         DB::beginTransaction();
         try
         {
-            $this->validate($request,[
+            $validator = Validator::make($request->all(),[
                 'rating'=>'required',
                 'membership_id'=>'required'
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $rating = Rating::find($id);
             if($rating)
             {}

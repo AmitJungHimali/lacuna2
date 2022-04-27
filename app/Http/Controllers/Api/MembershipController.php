@@ -7,6 +7,7 @@ use App\Models\Membership;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class MembershipController extends Controller
 {
@@ -32,13 +33,17 @@ class MembershipController extends Controller
         DB::beginTransaction();
         try
         {
-            $this ->validate($request,[
+            $validator = Validator::make($request->all(),[
                 'title'=>'required',
                 'description'=>'required',
                 'membershipPlan'=>'required',
                 'price'=>'required',
                 'rank'=>'required'
             ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $membership = new Membership();
             $membership->title = $request->title;
             $membership->description = $request->description;
@@ -85,6 +90,17 @@ class MembershipController extends Controller
         DB::beginTransaction();
         try
         {
+            $validator = Validator::make($request->all(),[
+                'title'=>'required',
+                'description'=>'required',
+                'membershipPlan'=>'required',
+                'price'=>'required',
+                'rank'=>'required'
+            ]);
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
             $membership = Membership::where('id','=',$id)->first();
         if($membership)
         {

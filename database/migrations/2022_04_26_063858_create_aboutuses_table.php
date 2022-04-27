@@ -15,6 +15,8 @@ class CreateAboutusesTable extends Migration
     {
         Schema::create('aboutuses', function (Blueprint $table) {
             $table->id();
+            $table->text('coverImage');
+            $table->text('description');
             $table->timestamps();
         });
     }
