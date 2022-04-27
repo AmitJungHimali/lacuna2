@@ -19,6 +19,7 @@ use App\Http\Controllers\MentorController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\WorkshopController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\UserdetailsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,12 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::put('team/{id}',[TeamController::class,'update']);
     Route::delete('team/{id}',[TeamController::class,'destroy']);
 
+    Route::get('userdetails',[UserdetailsController::class,'index']);
+
+    Route::get('userdetails/{id}',[UserdetailsController::class,'show']);
+    Route::put('userdetails/{id}',[UserdetailsController::class,'update']);
+   
+
         // raksha
     Route::post('permission',[permissionController::class,'store']);
     Route::post('permission/{id}',[permissionController::class,'update']);
@@ -86,6 +93,8 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/verifymailOTP','App\Http\Controllers\SmtpController@inputOTP');//verify sent OTP
     Route::get('useremailverification','App\Http\Controllers\SmtpController@verified');//only for email verification,user must be signed in.
     Route::post('otpverification','App\Http\Controllers\SmtpController@OTP');//send code to verify email
+
+    Route::delete('userdelete/{id}','App\Http\Controllers\AuthController@delete');
 });
     Route::post('register','App\Http\Controllers\AuthController@register');
     Route::post('login','App\Http\Controllers\AuthController@login');

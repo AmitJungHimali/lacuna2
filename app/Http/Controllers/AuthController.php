@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    
     public function register(Request $request){
        
         $validator = Validator::make($request->all(),[
@@ -55,12 +56,9 @@ class AuthController extends Controller
         
         $usercreation=UserDetail::create($userdetails);
         if ($request->hasFile('profileImage')){
-            $file = $request->profileImage;
-            $newName = time(). $file->getClientOriginalName();
-            $file->move('uploads/userprofile/',$newName);
-            $usercreation->profileImage ='uploads/userprofile/' .$newName;
-            $usercreation->save();
+            $usercreation->addMediaFromRequest('profileImage')->toMediaCollection('profileImages');
         }
+        $usercreation->save();
         
         $response=[
             'user'=>$userLoginDetail,
@@ -104,6 +102,18 @@ class AuthController extends Controller
             return[
                 'message'=>'user has been logged out'
             ];
+        }
+
+        public function delete($id){
+            $user=User::whereId($id)->delete();
+
+            $return = ["status" => "Success",
+                "error" => [
+                    "code" => 200,
+                    "errors" => 'Deleted successfully'
+                            ]
+                    ];
+            return response()->json($return, 200);
         }
     
 }

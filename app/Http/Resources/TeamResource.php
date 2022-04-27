@@ -16,7 +16,11 @@ class TeamResource extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'image',
+            'image'=>$this->when(1, function () {
+                if (count($this->getMedia('images')) > 0) {
+                    return $this->getMedia('images')->first()->getUrl();
+                }
+            }),
             'name'=>$this->name,
             'desgination'=>$this->designation,
             'quotes'=>$this->quotes,

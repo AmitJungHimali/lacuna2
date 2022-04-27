@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Userdetails extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+
+class Userdetails extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory ,InteractsWithMedia;
     protected $fillable = [
         'firstName',
         'middleName',
@@ -17,6 +20,7 @@ class Userdetails extends Model
         'birthDate',
         'companyName',
         'user_id',
-        'role_id'
+        'role_id',
+        'profileImage'
     ];
 }

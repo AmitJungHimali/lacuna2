@@ -51,10 +51,7 @@ class TeamController extends Controller
         }
         $team=team::create($request->all());
         if ($request->hasFile('image')){
-            $file = $request->image;
-            $newName = time(). $file->getClientOriginalName();
-            $file->move('uploads/team/',$newName);
-            $team->image ='uploads/team/' .$newName;
+            $team->addMediaFromRequest('image')->toMediaCollection('images');
         }
         $team->save();
         return new TeamResource($team);
@@ -69,6 +66,7 @@ class TeamController extends Controller
     public function show($id)
     {
         $team=team::findOrFail($id);
+       
         return new TeamResource($team);
     }
 
@@ -91,15 +89,14 @@ class TeamController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors() , 422);
         }
+        
         $team=team::findOrFail($id);
         $team->fill($request->all());
-        if ($request->hasFile('image')){
-            
-            $file = $request->image;
-            $newName = time(). $file->getClientOriginalName();
-            $file->move('uploads/team/',$newName);
-            $team->image ='uploads/team/' .$newName;
+        if($request->hasFile('image')){
+            $team->clearMediaCollection('images');  //while sending update request use send POST ,_method=PUT like this localhost:8000/api/team/10?_method=PUT&name=333&rank=4&status=1&designation=333&quotes=33
+            $team->addMediaFromRequest('image')->toMediaCollection('images');
         }
+            
         $team->save();
         return new TeamResource($team);
     }
