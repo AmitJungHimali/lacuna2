@@ -46,7 +46,10 @@ class MentorController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors() , 422);
         }
+
         $mentor=Mentor::create($request->all());
+        $mentor->addMediaFromRequest('image')->toMediaCollection('images');
+        $mentor->save();
         return new MentorResource($mentor);    
     }
 
@@ -93,6 +96,10 @@ class MentorController extends Controller
         }
         $ment=Mentor::findOrFail($id);
         $ment->fill($request->all());
+        if($request->hasFile('image')){
+            $ment->clearMediaCollection('images');
+            $ment->addMediaFromRequest('image')->toMediaCollection('images');
+        }
         $ment->save();
         return new MentorResource($ment);
     }
@@ -104,8 +111,10 @@ class MentorController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-        Mentor::whereId($id)->delete();
+    {   $mentor=Mentor::findOrFail($id);
+        $mentor->clearMediaCollection('images');
+        $mentor->delete();
+        
         $return = ["status" => "Success",
                 "error" => [
                     "code" => 200,

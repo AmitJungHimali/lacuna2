@@ -38,7 +38,7 @@ class GalleryController extends Controller
     public function store(Request $request)
     {
         $validator=Validator::make($request->all(),[
-            'image'=>['required'],
+            'image'=>['required','image'],
             'rank'=>['required','numeric'],
             'status'=>['required','boolean'],
             'event_id'=>['required','exists:events,id'],
@@ -49,6 +49,8 @@ class GalleryController extends Controller
         }
         
         $gallery=gallery::create($request->all());
+        $gallery->addMediaFromRequest('image')->toMediaCollection('images');
+        $gallery->save();
         return new GalleryResource($gallery);
     }
 
@@ -95,6 +97,10 @@ class GalleryController extends Controller
         }
         $ment=gallery::findOrFail($id);
         $ment->fill($request->all());
+        if($request->hasFile('image')){
+            $ment->clearMediaCollection('images');  //while sending update request use send POST ,_method=PUT like this localhost:8000/api/team/10?_method=PUT&name=333&rank=4&status=1&designation=333&quotes=33
+            $ment->addMediaFromRequest('image')->toMediaCollection('images');
+        }
         $ment->save();
         return new GalleryResource($ment);
     }
@@ -107,11 +113,13 @@ class GalleryController extends Controller
      */
     public function destroy($id)
     {
-        Gallery::whereId($id)->delete();
+        $gall=Gallery::findOrFail($id);
+        $gall->clearMediaCollection('images');
+        $gall->delete();
         $return = ["status" => "Success",
                 "error" => [
                     "code" => 200,
-                    "errors" => 'Deleted successfully'
+                    "errors" => 'Gallery deleted successfully'
                             ]
                     ];
             return response()->json($return, 200);

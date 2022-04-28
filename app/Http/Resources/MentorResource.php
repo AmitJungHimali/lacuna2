@@ -19,7 +19,11 @@ class MentorResource extends JsonResource
             'name'=>$this->name,
             'desgination'=>$this->designation,
             'quotes'=>$this->quotes,
-            'image'=>$this->image
+            'image'=>$this->when(1, function () {
+                if (count($this->getMedia('images')) > 0) {
+                    return $this->getMedia('images')->first()->getUrl();
+                }
+            }),
         ];
     }
 }

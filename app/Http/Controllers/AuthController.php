@@ -105,12 +105,16 @@ class AuthController extends Controller
         }
 
         public function delete($id){
-            $user=User::whereId($id)->delete();
+            $user=User::findOrFail($id);
+            $userdetail=$user->details;
+            $userdetail->clearMediaCollection('profileImages');
+            $userdetail->delete();
+            $user->delete();
 
             $return = ["status" => "Success",
                 "error" => [
                     "code" => 200,
-                    "errors" => 'Deleted successfully'
+                    "errors" => 'User ,userdetails deleted successfully'
                             ]
                     ];
             return response()->json($return, 200);

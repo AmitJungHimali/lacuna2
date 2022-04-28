@@ -15,8 +15,12 @@ class GalleryResource extends JsonResource
     public function toArray($request)
     {
         return[
-            'id'=>$request->id,
-            'image',
+            'id'=>$this->id,
+            'image'=>$this->when(1, function () {
+                if (count($this->getMedia('images')) > 0) {
+                    return $this->getMedia('images')->first()->getUrl();
+                }
+            }),
             'workshop'=>$this->workshop,
             'status'=>$this->status,
             'rank'=>$this->rank,

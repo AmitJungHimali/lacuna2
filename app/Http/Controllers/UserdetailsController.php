@@ -89,8 +89,9 @@ class UserdetailsController extends Controller
         if($request->hasFile('profileImage')){
             $user->clearMediaCollection('profileImages');
             $user->addMediaFromRequest('profileImage')->toMediaCollection('profileImages');
-            $user->save();
+            
         }
+        $user->save();
         return new UserdetailResource($user);
     }
 
