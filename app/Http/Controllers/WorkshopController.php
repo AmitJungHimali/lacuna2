@@ -40,7 +40,7 @@ class WorkshopController extends Controller
     {
         $id=Auth::id();
         $validator = Validator::make($request->all(),[
-        'banner'=>['required'],
+        'banner'=>['required','image'],
         'title'=>['required'],
         'descriptionTitle'=>['required'],
         'description'=>['required'],
@@ -56,8 +56,10 @@ class WorkshopController extends Controller
         }
         $request['user_id']=$id;
         $workshop=Workshop::create($request->all());
-
-
+        if ($request->hasFile('banner')){
+            $workshop->addMediaFromRequest('banner')->toMediaCollection('banners');
+        }
+        $workshop->save();
         return new WorkshopResource($workshop);
     }
 
@@ -94,7 +96,7 @@ class WorkshopController extends Controller
         $workshop=Workshop::findOrFail($id);
         if($workshop->user_id==Auth::id()){
             $validator = Validator::make($request->all(),[
-                'banner'=>['required'],
+                'banner'=>['required','image'],
                 'title'=>['required'],
                 'descriptionTitle'=>['required'],
                 'description'=>['required'],
@@ -110,6 +112,10 @@ class WorkshopController extends Controller
                 }
                 $workshop=Workshop::findOrFail($id);
                 $workshop->fill($request->all());
+                if($request->hasFile('banner')){
+                    $workshop->clearMediaCollection('banners');  //while sending update request use send POST ,_method=PUT like this localhost:8000/api/team/10?_method=PUT&name=333&rank=4&status=1&designation=333&quotes=33
+                    $workshop->addMediaFromRequest('banner')->toMediaCollection('banners');
+                }
                 $workshop->save();
                 $updatedwork=Workshop::findOrFail($id);
             return new WorkshopResource($updatedwork);
@@ -134,10 +140,12 @@ class WorkshopController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
+    {$user=Auth::user();
         $workshop=Workshop::findOrFail($id);
         if($workshop->user_id==$user->id){
-            $work=Workshop::whereId($id)->delete();
+            $work=Workshop::findOrFail($id);
+            $work->clearMediaCollection('banners');
+            $work->delete();
             $return = ["status" => "Success",
                     "error" => [
                         "code" => 200,

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class workshop extends Model
+class workshop extends Model  implements HasMedia
 {
-    use HasFactory,HasApiTokens;
+    use HasFactory,HasApiTokens,InteractsWithMedia;
     protected $fillable=[
         'banner',
         'title',
@@ -24,6 +26,6 @@ class workshop extends Model
         'user_id'
     ];
     public function userID(){
-        return $this->belongsTo('App\ModelUser','user_id');
+        return $this->belongsTo('App\Models\User','user_id');
     }
 }
