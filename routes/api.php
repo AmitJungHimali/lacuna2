@@ -71,8 +71,9 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
 
     Route::get('userdetails/{id}',[UserdetailsController::class,'show']);
     Route::put('userdetails/{id}',[UserdetailsController::class,'update']);
-   
 
+    Route::post('assignrole',[roleController::class,'assignRole']);
+   
         // raksha
     Route::post('permission',[permissionController::class,'store']);
     Route::post('permission/{id}',[permissionController::class,'update']);

@@ -9,6 +9,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Validator;
+
 class roleController extends Controller
 {
     /**
@@ -106,5 +108,31 @@ class roleController extends Controller
         $role=Role::findOrFail($id);
         $role->delete();
         return response()->json(['message','Data Deleted Successful']);
+    }
+
+    public function assignRole(Request $request){
+        try{
+            $validator=Validator::make($request->all(),[
+                'user_id'=>['required','numeric','exists:users,id'],
+                'role_id'=>['required','numeric','exists:roles,id']
+             ]);
+             if ($validator->fails()) {
+                 return response()->json($validator->errors() , 422);
+             }
+             $details=[
+                 'user_id'=>$request->user_id,
+                 'role_id'=>$request->role_id
+             ];
+             DB::table('roles_users')->insert($details);
+              return response()->json([
+                'message'=>'Assigned role to user'
+            ],200);
+        }
+
+        Catch(Exception $e){
+            DB::rollback();
+            return response()->json([$e]);
+        }
+            
     }
 }

@@ -123,14 +123,6 @@ class WorkshopController extends Controller
         return response()->json([
             'message'=>'you are not owner of this workshop'
         ],401);
-                   
-
-
-
-
-
-
-
     }
 
     /**
@@ -157,7 +149,5 @@ class WorkshopController extends Controller
         return response()->json([
             'message'=>'You are not authenticated to delet this workshop'
         ],401);
-
-
     }
 }

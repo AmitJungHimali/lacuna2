@@ -51,4 +51,8 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\emailverification');
         
     }
+    public function role(){
+        return $this->belongsToMany('App\Models\role','role_id');
+    }
+    
 }
