@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-   
+
     <title>Welcome Email</title>
 </head>
 <body>
